@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FrakDashboard — Fraktionen</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="mark"></div>
+      <div>
+        <div class="title">FrakDashboard</div>
+        <div class="sub">Fraktionsverwalter</div>
+      </div>
+    </div>
+
+    <nav class="nav card pad" style="margin-top:14px">
+      <a href="./dashboard.html">📊 Übersicht</a>
+      <a href="./frakwarns.html">⚠️ Fraktionswarns</a>
+      <a class="active" href="./fraktionen.html">🛡️ Fraktionen</a>
+      <a href="./mlo.html">🏢 MLOs</a>
+    </nav>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <div class="h1">Fraktionsverwalter</div>
+        <div class="p">Verwalte alle Fraktionen zentral.</div>
+      </div>
+      <button class="btn danger" onclick="FD.logout()">Logout</button>
+    </div>
+
+    <!-- CREATE -->
+    <div class="card pad">
+      <div class="h2">Neue Fraktion</div>
+
+      <form id="frakForm" style="margin-top:12px">
+        <div class="grid cols-2">
+          <input class="input" id="f_name" placeholder="Fraktionsname">
+          <input class="input" id="f_leitung" placeholder="Fraktionsleitung">
+        </div>
+
+        <div class="formRow">
+          <textarea class="textarea" id="f_notiz" placeholder="Notiz (optional)"></textarea>
+        </div>
+
+        <button class="btn primary" type="submit">Fraktion speichern</button>
+      </form>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card pad" style="margin-top:14px">
+      <div class="h2">Fraktionen</div>
+
+      <table class="table" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Leitung</th>
+            <th>Status</th>
+            <th>Notiz</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="frakTable"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/js/common.js"></script>
+<script>
+FD.requireAuthOrRedirect();
+
+const KEY = "FD_fraktionen";
+const table = document.getElementById("frakTable");
+
+function load() {
+  return JSON.parse(localStorage.getItem(KEY) || "[]");
+}
+function save(data) {
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+function render() {
+  const data = load();
+  table.innerHTML = "";
+
+  data.forEach((f, i) => {
+    table.innerHTML += `
+      <tr>
+        <td><strong>${f.name}</strong></td>
+        <td>${f.leitung}</td>
+        <td><span class="badge success dot">${f.status}</span></td>
+        <td>${f.notiz || "—"}</td>
+        <td>
+          <button class="btn danger" onclick="remove(${i})">Löschen</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function remove(i) {
+  const data = load();
+  data.splice(i, 1);
+  save(data);
+  render();
+}
+
+document.getElementById("frakForm").onsubmit = e => {
+  e.preventDefault();
+  const data = load();
+  data.push({
+    name: f_name.value,
+    leitung: f_leitung.value,
+    notiz: f_notiz.value,
+    status: "Aktiv"
+  });
+  save(data);
+  e.target.reset();
+  render();
+};
+
+render();
+
+/* CONSOLE API */
+FrakDashboard.fraktionen = {
+  list: () => load(),
+  clear: () => save([]),
+};
+</script>
+</body>
+</html>

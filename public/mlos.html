@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FrakDashboard — MLOs</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="mark"></div>
+      <div>
+        <div class="title">FrakDashboard</div>
+        <div class="sub">MLO Verwaltung</div>
+      </div>
+    </div>
+
+    <nav class="nav card pad" style="margin-top:14px">
+      <a href="./dashboard.html">📊 Übersicht</a>
+      <a href="./frakwarns.html">⚠️ Fraktionswarns</a>
+      <a href="./fraktionen.html">🛡️ Fraktionen</a>
+      <a class="active" href="./mlo.html">🏢 MLOs</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <div class="h1">MLO Verwaltung</div>
+        <div class="p">Interiors & Gebäude verwalten.</div>
+      </div>
+      <button class="btn danger" onclick="FD.logout()">Logout</button>
+    </div>
+
+    <div class="card pad">
+      <div class="h2">Neues MLO</div>
+
+      <form id="mloForm" style="margin-top:12px">
+        <div class="grid cols-2">
+          <input class="input" id="m_name" placeholder="MLO Name">
+          <input class="input" id="m_frak" placeholder="Fraktion">
+        </div>
+        <textarea class="textarea" id="m_notiz" placeholder="Notiz"></textarea>
+        <button class="btn primary" type="submit">MLO speichern</button>
+      </form>
+    </div>
+
+    <div class="card pad" style="margin-top:14px">
+      <div class="h2">MLOs</div>
+
+      <table class="table" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Fraktion</th>
+            <th>Status</th>
+            <th>Notiz</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="mloTable"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/js/common.js"></script>
+<script>
+FD.requireAuthOrRedirect();
+
+const KEY = "FD_mlos";
+const table = document.getElementById("mloTable");
+
+function load(){ return JSON.parse(localStorage.getItem(KEY)||"[]"); }
+function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
+
+function render(){
+  table.innerHTML="";
+  load().forEach((m,i)=>{
+    table.innerHTML+=`
+      <tr>
+        <td><strong>${m.name}</strong></td>
+        <td>${m.frak}</td>
+        <td><span class="badge success dot">Aktiv</span></td>
+        <td>${m.notiz||"—"}</td>
+        <td><button class="btn danger" onclick="del(${i})">Löschen</button></td>
+      </tr>`;
+  });
+}
+function del(i){
+  const d=load(); d.splice(i,1); save(d); render();
+}
+
+mloForm.onsubmit=e=>{
+  e.preventDefault();
+  const d=load();
+  d.push({name:m_name.value, frak:m_frak.value, notiz:m_notiz.value});
+  save(d); e.target.reset(); render();
+};
+
+render();
+
+/* CONSOLE API */
+FrakDashboard.mlos = {
+  list: () => load(),
+  clear: () => save([])
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FrakDashboard — Übersicht</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="mark"></div>
+        <div>
+          <div class="title">FrakDashboard</div>
+          <div class="sub">Admin Panel</div>
+        </div>
+      </div>
+
+      <nav class="nav card pad" style="margin-top:14px">
+        <a class="active" href="./dashboard.html">📊 Übersicht</a>
+        <a href="./frakwarns.html">⚠️ Fraktionswarns</a>
+<div class="sep"></div>
+
+<a href="./users.html" id="navUsers" style="display:none;">
+  👥 Benutzerverwaltung
+</a>
+
+<a href="#" onclick="alert('Kommt als nächstes: Fraktionsverwalter'); return false;">
+  🛡️ Fraktionsverwalter
+</a>
+
+<a href="#" onclick="alert('Kommt als nächstes: MLOs'); return false;">
+  🏢 MLOs
+</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <div class="h1">Übersicht</div>
+          <div class="p">Schneller Überblick über dein System.</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div class="user">
+            👤 <strong id="userName">—</strong>
+            <span class="kbd" id="userRole">—</span>
+          </div>
+          <button class="btn danger" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div class="grid cols-3">
+        <div class="card pad">
+          <div class="h2">Aktive Fraktionswarns</div>
+          <div class="p">Nicht abgelaufene Einträge</div>
+          <div style="font-size:42px;font-weight:800;margin-top:10px" id="countWarnsActive">0</div>
+          <a class="btn primary" href="./frakwarns.html" style="margin-top:10px">Öffnen</a>
+        </div>
+
+        <div class="card pad">
+          <div class="h2">Abgelaufene Warns</div>
+          <div class="p">Historie / Nachvollziehbarkeit</div>
+          <div style="font-size:42px;font-weight:800;margin-top:10px" id="countWarnsExpired">0</div>
+          <div class="small" style="margin-top:10px">Diese werden nicht gelöscht, nur markiert.</div>
+        </div>
+
+        <div class="card pad">
+          <div class="h2">Console Commands</div>
+          <div class="p">Im Browser (F12 Konsole)</div>
+          <div class="small" style="margin-top:10px">
+            <div><span class="kbd">FrakDashboard.help()</span></div>
+            <div style="margin-top:6px"><span class="kbd">FrakDashboard.seedDemo()</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="card pad">
+        <div class="h2">Letzte Aktionen</div>
+        <div class="p">Die letzten aktiven Warn-Einträge.</div>
+        <div id="lastActions" class="grid" style="margin-top:12px"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/dashboard.js"></script>
+
+  <script>
+  const s = FD.getSession();
+
+  if (s && (s.role === "Admin" || s.role === "Leitung")) {
+    const nav = document.getElementById("navUsers");
+    if (nav) nav.style.display = "flex";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FrakDashboard — Fraktionswarns</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="mark"></div>
+        <div>
+          <div class="title">FrakDashboard</div>
+          <div class="sub">Fraktionswarns</div>
+        </div>
+      </div>
+
+      <nav class="nav card pad" style="margin-top:14px">
+        <a href="./dashboard.html">📊 Übersicht</a>
+        <a class="active" href="./frakwarns.html">⚠️ Fraktionswarns</a>
+        <div class="sep"></div>
+        <a href="#" onclick="alert('Kommt als nächstes: Fraktionsverwalter'); return false;">🛡️ Fraktionsverwalter</a>
+        <a href="#" onclick="alert('Kommt als nächstes: MLOs'); return false;">🏢 MLOs</a>
+      </nav>
+
+      <div class="card pad" style="margin-top:14px">
+        <div class="h2">Console</div>
+        <div class="small" style="margin-top:10px">
+          <div><span class="kbd">FrakDashboard.warnings.add({...})</span></div>
+          <div style="margin-top:8px"><span class="kbd">FrakDashboard.warnings.list()</span></div>
+          <div style="margin-top:8px"><span class="kbd">FrakDashboard.seedDemo()</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <div class="h1">Fraktionswarns</div>
+          <div class="p">Einträge verwalten • Ablauf automatisch <span class="kbd">+14 Tage</span></div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div class="user">
+            👤 <strong id="userName">—</strong>
+            <span class="kbd" id="userRole">—</span>
+          </div>
+          <button class="btn danger" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card pad">
+          <div class="h2">Neue Warn erstellen</div>
+          <div class="p">Felder ausfüllen und speichern.</div>
+
+          <form id="warnForm" style="margin-top:12px">
+            <div class="grid cols-2">
+              <div>
+                <label class="small">Fraktionsname</label>
+                <input class="input" id="f_frak" placeholder="z.B. LSPD" />
+              </div>
+              <div>
+                <label class="small">Warn (0–3)</label>
+                <select class="select" id="f_warn">
+                  <option value="0">0</option>
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <label class="small">Vergeben an</label>
+              <input class="input" id="f_an" placeholder="z.B. Fraktionsleitung" />
+            </div>
+
+            <div class="formRow">
+              <label class="small">Begründung</label>
+              <textarea class="textarea" id="f_begr" placeholder="Warum wurde die Warn vergeben?"></textarea>
+            </div>
+
+            <div class="formRow">
+              <label class="small">Notiz (optional)</label>
+              <textarea class="textarea" id="f_notiz" placeholder="Interne Notiz..."></textarea>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
+              <button class="btn primary" type="submit">Warn speichern</button>
+              <button class="btn" type="button" onclick="FrakDashboard.seedDemo(); alert('Demo-Daten erstellt!'); location.reload();">
+                Demo-Daten
+              </button>
+              <button class="btn danger" type="button" onclick="if(confirm('Wirklich alles löschen?')){FrakDashboard.warnings.clearAll(); location.reload();}">
+                Alles löschen
+              </button>
+            </div>
+
+            <div class="small" style="margin-top:10px">
+              Hinweis: Ablaufdatum + Ablaufuhrzeit wird automatisch aus dem Erstellzeitpunkt berechnet.
+            </div>
+          </form>
+        </div>
+
+        <div class="card pad">
+          <div class="h2">Filter & Suche</div>
+          <div class="p">Schnell Einträge finden.</div>
+
+          <div class="grid cols-2" style="margin-top:12px">
+            <div>
+              <label class="small">Status</label>
+              <select class="select" id="filterStatus">
+                <option value="all" selected>Alle</option>
+                <option value="active">Nur aktiv</option>
+                <option value="expired">Nur abgelaufen</option>
+              </select>
+            </div>
+            <div>
+              <label class="small">Suche</label>
+              <input class="input" id="searchText" placeholder="Fraktion, Begründung, Name..." />
+            </div>
+          </div>
+
+          <div class="card pad" style="margin-top:14px;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)">
+            <div class="small">
+              Console-Beispiel:
+              <div style="margin-top:8px" class="kbd">
+                FrakDashboard.warnings.add({ fraktionsname:"LSPD", warn:1, vergebenAn:"Leitung", begruendung:"...", vergebenVon:"admin", notiz:"..." })
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="card pad">
+        <div class="h2">Einträge</div>
+        <div class="p">Klicke auf „Details“, um alles zu sehen.</div>
+
+        <div style="overflow:auto; margin-top:12px">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Fraktion</th>
+                <th>Warn</th>
+                <th>Vergeben an / von</th>
+                <th>Begründung / Uhrzeit</th>
+                <th>Status / Ablauf</th>
+                <th>Aktionen</th>
+              </tr>
+            </thead>
+            <tbody id="warnTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="head">
+        <div>
+          <div class="h2" id="modalTitle">—</div>
+          <div class="meta" id="modalMeta">—</div>
+        </div>
+        <button class="close" data-close-modal>✕</button>
+      </div>
+      <div id="modalBody"></div>
+      <div class="footer">
+        <button class="btn" data-close-modal>Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/frakwarns.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FrakDashboard — Login</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <div class="loginWrap">
+    <div class="card loginCard">
+      <div class="loginHeader">
+        <div class="mark"></div>
+        <div>
+          <div class="h1">Fraktions Dashboard</div>
+          <div class="p">Fraktions Übersicht</div>
+        </div>
+      </div>
+
+      <form id="loginForm" style="margin-top:12px">
+        <div class="formRow">
+          <label class="small">Benutzername</label>
+          <input class="input" id="username" placeholder="Benutzername" autocomplete="username" />
+        </div>
+        <div class="formRow">
+          <label class="small">Passwort</label>
+          <input class="input" id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <div class="formRow row2">
+          <button class="btn primary" type="submit">Login</button>
+          </button>
+        </div>
+
+        <div id="loginMsg" class="small" style="margin-top:10px"></div>
+        <div class="small" style="margin-top:12px;opacity:.9">
+         Frage deine Daten bei @NRW | Ice an 
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/auth.js"></script>
+</body>
+</html>

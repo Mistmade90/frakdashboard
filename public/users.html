@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FrakDashboard — Benutzerverwaltung</title>
+
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <script src="../assets/js/common.js"></script>
+</head>
+
+<body onload="initUsers()">
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="mark"></div>
+      <div>
+        <div class="title">FrakDashboard</div>
+        <div class="sub">Benutzerverwaltung</div>
+      </div>
+    </div>
+
+    <nav class="nav card pad" style="margin-top:14px">
+      <a href="./dashboard.html">📊 Übersicht</a>
+      <a href="./frakwarns.html">⚠️ Fraktionswarns</a>
+      <div class="sep"></div>
+      <a class="active" href="./users.html">👥 Benutzer</a>
+    </nav>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <div class="h1">Benutzerverwaltung</div>
+        <div class="p">Admin & Leitung</div>
+      </div>
+
+      <div class="user">
+        👤 <strong id="me"></strong>
+        <span class="kbd" id="myRole"></span>
+        <button class="btn danger" onclick="FD.logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- CREATE USER -->
+    <div class="card pad">
+      <div class="h2">Neuen Benutzer anlegen</div>
+
+      <div class="grid cols-3" style="margin-top:12px">
+        <input class="input" id="nu" placeholder="Benutzername" />
+        <input class="input" id="np" placeholder="Passwort" />
+        <select class="select" id="nr"></select>
+      </div>
+
+      <button class="btn primary" style="margin-top:12px" onclick="createUser()">
+        Benutzer erstellen
+      </button>
+    </div>
+
+    <!-- USER LIST -->
+    <div class="card pad" style="margin-top:16px">
+      <div class="h2">Vorhandene Benutzer</div>
+
+      <table class="table" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th>Benutzername</th>
+            <th>Rolle</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+function initUsers() {
+  FD.requireAuthOrRedirect();
+
+  const s = FD.getSession();
+  document.getElementById("me").textContent = s.username;
+  document.getElementById("myRole").textContent = s.role;
+
+  // Rollen-Dropdown
+  const r = document.getElementById("nr");
+  r.innerHTML = "";
+
+  if (s.role === "Admin") {
+    r.innerHTML += "<option>Admin</option>";
+  }
+  r.innerHTML += "<option>Leitung</option>";
+  r.innerHTML += "<option>User</option>";
+
+  renderUsers();
+}
+
+function renderUsers() {
+  const users = FrakDashboard.users.list();
+  const table = document.getElementById("userTable");
+  table.innerHTML = "";
+
+  const me = FD.getSession();
+
+  users.forEach(u => {
+    let delBtn = "";
+
+    if (me.role === "Admin" || me.role === "Leitung") {
+      if (!(me.role === "Leitung" && u.role === "Admin") && me.username !== u.username) {
+        delBtn = `<button class="btn danger" onclick="removeUser('${u.username}')">Zugang Löschen</button>`;
+      }
+    }
+
+    table.innerHTML += `
+      <tr>
+        <td>${u.username}</td>
+        <td><span class="badge">${u.role}</span></td>
+        <td>${delBtn}</td>
+      </tr>
+    `;
+  });
+}
+
+function createUser() {
+  const res = FrakDashboard.users.add(
+    nu.value.trim(),
+    np.value.trim(),
+    nr.value
+  );
+
+  if (!res.ok) {
+    alert("Nicht erlaubt oder Benutzer existiert bereits");
+    return;
+  }
+
+  nu.value = "";
+  np.value = "";
+  renderUsers();
+}
+
+function removeUser(username) {
+  if (!confirm("Benutzer wirklich löschen?")) return;
+
+  const res = FrakDashboard.users.delete(username);
+  if (!res.ok) {
+    alert("Benutzer konnte nicht gelöscht werden");
+    return;
+  }
+
+  renderUsers();
+}
+</script>
+
+</body>
+</html>
